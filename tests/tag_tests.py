@@ -10,7 +10,7 @@ def test_ECTagDataStr_fail():
         pass
 
 def test_ECTagDataHash_success():
-    assert ECTagDataHash('0123456789abcdef') == '\t\x100123456789abcdef'
+    assert ECTagDataHash('0123456789abcdef') == '\x09\x100123456789abcdef'
 
 def test_ECTagDataHash_fail():
     try:
