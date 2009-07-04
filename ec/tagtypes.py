@@ -1,0 +1,11 @@
+tagtype = {}
+tagtype['unknown'] = 0
+tagtype['custom'] = 1
+tagtype['uint8'] = 2
+tagtype['uint16'] = 3
+tagtype['uint32'] = 4
+tagtype['uint64'] = 5
+tagtype['string'] = 6
+tagtype['double'] = 7
+tagtype['ipv4'] = 8
+tagtype['hash16'] = 9
