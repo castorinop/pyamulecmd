@@ -3,3 +3,7 @@ coverage:
 
 gencodes:
 	sh -c "cd helper; ./gen_tagtypes.py > ../ec/tagtypes.py"
+
+clean:
+	rm .coverage
+	find . -name '*.pyc' -exec rm {} \;
