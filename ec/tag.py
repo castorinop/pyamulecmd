@@ -1,4 +1,4 @@
-from struct import pack
+from struct import pack, unpack
 import types
 from tagtypes import tagtype
 
@@ -43,3 +43,50 @@ def ECTagDataInt(data):
         tagType = tagtype['uint64']
         len = 8
     return pack(fmtStr, tagType, len, data)
+
+def ReadTag(data):
+    if ord(data[0]) in range(0x7F):
+        name_len = 1
+    elif ord(data[0]) in range(0xc3,0xdf):
+        name_len = 2
+    elif ord(data[0]) in range(0xe0,0xef):
+        name_len = 3
+    else:
+        raise ValueError
+    tag_name = ord(data[:name_len].decode("utf-8"))/2
+    data_len, data = ReadTagData(data[name_len:])
+    return name_len + data_len , tag_name, data
+
+def ReadTagData(data):
+    type = ord(data[0])
+    if type in [tagtype['uint8'], tagtype['uint16'], tagtype['uint32'], tagtype['uint64']]:
+        len, value = ReadInt(data[1:])
+    elif type == tagtype['hash16']:
+        len, value = ReadHash(data[1:])
+    elif type == tagtype['string']:
+        len, value = ReadString(data[1:])
+    else:
+        raise TypeError
+    return len + 1, value
+
+def ReadInt(data):
+    len = unpack('!B', data[0])[0]
+    if len == 1:
+        fmtStr = '!B'
+    elif len == 2:
+        fmtStr = '!H'
+    elif len == 4:
+        fmtStr = '!I'
+    else:
+        fmtStr = '!Q'
+    return len +1 , unpack(fmtStr, data[1:])[0]
+
+def ReadString(data):
+    len = ord(data[0])
+    return len+1, unicode(data[1:len])
+
+def ReadHash(data):
+    len = ord(data[0])
+    if len != 16:
+        raise ValueError
+    return len+1, data[1:len+1]

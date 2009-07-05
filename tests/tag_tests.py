@@ -1,4 +1,5 @@
 from ec.tag import *
+from ec import codes
 
 def test_ECTagDataStr_success():
     assert ECTagDataStr(u'test') == '\x06\x05test\x00'
@@ -51,3 +52,108 @@ def test_ECTagData_fail():
 def test_ECTag():
     test_data = 123
     assert ECTag(0x101,test_data) == '\xc8\x82' + ECTagData(test_data)
+
+def test_ReadInt_uint8():
+    test_int = 73
+    test_data = ECTagDataInt(test_int)
+    assert ReadInt(test_data[1:]) == (2, test_int)
+
+def test_ReadInt_uint16():
+    test_int = 14092
+    test_data = ECTagDataInt(test_int)
+    assert ReadInt(test_data[1:]) == (3, test_int)
+
+def test_ReadInt_uint32():
+    test_int = 312353512
+    test_data = ECTagDataInt(test_int)
+    assert ReadInt(test_data[1:]) == (5, test_int)
+
+def test_ReadInt_uint32():
+    test_int = 8414561238214513L
+    test_data = ECTagDataInt(test_int)
+    assert ReadInt(test_data[1:]) == (9, test_int)
+
+def test_ReadString():
+    test_string = u'Die Welt ist rund.'
+    test_data = ECTagDataStr(test_string)
+    assert ReadString(test_data[1:]) == (20, test_string)
+
+def test_ReadHash():
+    test_hash = 'abcdef0123456789'
+    test_data = ECTagDataHash(test_hash)
+    assert ReadHash(test_data[1:]) == (17, test_hash)
+
+def test_ReadHash_fail():
+    try:
+        ReadHash('too short')
+    except ValueError:
+        pass
+
+def test_ReadTagData_uint8():
+    test_int = 73
+    test_data = ECTagDataInt(test_int)
+    assert ReadTagData(test_data) == (3, test_int)
+
+def test_ReadTagData_uint16():
+    test_int = 14092
+    test_data = ECTagDataInt(test_int)
+    assert ReadTagData(test_data) == (4, test_int)
+
+def test_ReadTagData_uint32():
+    test_int = 312353512
+    test_data = ECTagDataInt(test_int)
+    assert ReadTagData(test_data) == (6, test_int)
+
+def test_ReadTagData_uint32():
+    test_int = 8414561238214513L
+    test_data = ECTagDataInt(test_int)
+    assert ReadTagData(test_data) == (10, test_int)
+
+def test_ReadTagData_String():
+    test_string = u'Die Welt ist rund.'
+    test_data = ECTagDataStr(test_string)
+    assert ReadTagData(test_data) == (21, test_string)
+
+def test_ReadTagData_Hash():
+    test_hash = 'abcdef0123456789'
+    test_data = ECTagDataHash(test_hash)
+    assert ReadTagData(test_data) == (18, test_hash)
+
+def test_ReadTagData_fail():
+    try:
+        ReadTagData('abc')
+    except TypeError:
+        pass
+
+def test_ReadTag_mode_1char():
+    test_name = codes.tag['passwd_hash'] # 0x02
+    test_data = '1234567890abcdef'
+    assert ReadTag(ECTag(test_name,test_data)) == (19, test_name, test_data)
+
+def test_ReadTag_mode_2char():
+    test_name = codes.tag['client_version'] # 0x101
+    test_data = u'123'
+    assert ReadTag(ECTag(test_name,test_data)) == (8, test_name, test_data)
+
+def test_ReadTag_mode_3char():
+    test_name = 0xFFF
+    test_data = 123
+    assert ReadTag(ECTag(test_name,test_data)) == (6, test_name, test_data)
+
+def test_ReadTag_fail_1():
+    try:
+        ReadTag('\x80')
+    except ValueError:
+        pass
+
+def test_ReadTag_fail_2():
+    try:
+        ReadTag('\xc2')
+    except ValueError:
+        pass
+
+def test_ReadTag_fail_3():
+    try:
+        ReadTag('\xf0')
+    except ValueError:
+        pass
