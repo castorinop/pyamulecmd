@@ -104,7 +104,7 @@ def test_ReadTagData_uint32():
     test_data = ECTagDataInt(test_int)
     assert ReadTagData(test_data) == (6, test_int)
 
-def test_ReadTagData_uint32():
+def test_ReadTagData_uint64():
     test_int = 8414561238214513L
     test_data = ECTagDataInt(test_int)
     assert ReadTagData(test_data) == (10, test_int)
