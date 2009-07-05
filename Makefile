@@ -1,5 +1,5 @@
 coverage:
-	nosetests --with-coverage --cover-package=ec
+	nosetests --with-coverage --cover-package=ec --cover-erase
 
 gencodes:
 	sh -c "cd helper; ./gen_tagtypes.py > ../ec/tagtypes.py"

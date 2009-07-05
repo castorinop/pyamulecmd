@@ -79,7 +79,7 @@ def ReadInt(data):
         fmtStr = '!I'
     else:
         fmtStr = '!Q'
-    return len +1 , unpack(fmtStr, data[1:])[0]
+    return len +1 , unpack(fmtStr, data[1:1+len])[0]
 
 def ReadString(data):
     len = ord(data[0])
