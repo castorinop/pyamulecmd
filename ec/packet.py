@@ -3,12 +3,14 @@ from hashlib import md5
 from tag import ECTag, ReadTag
 import codes
 
-def ECPacket(data):
+def ECPacket(data_tuple):
+    data = ECPacketData(data_tuple)
     return pack('!II',
         codes.flag['base'] | codes.flag['utf8_numbers'],
         len(data)) + data
 
-def ECPacketData(type, tags):
+def ECPacketData(data_tuple):
+    type, tags = data_tuple
     return pack('BB',
         type,
         len(tags)) + ''.join(map(ECTag,tags))
@@ -36,8 +38,7 @@ def ReadPacketData(data):
     return type, tags
 
 def ECLoginPacket(app, version, password):
-    return ECPacket(
-        ECPacketData(codes.op['auth_req'],
+    return ECPacket((codes.op['auth_req'],
             [(codes.tag['client_name'],      unicode(app)),
              (codes.tag['client_version'],   unicode(version)),
              (codes.tag['protocol_version'], codes.protocol_version),
