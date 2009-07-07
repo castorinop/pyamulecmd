@@ -2,8 +2,9 @@ from struct import pack, unpack
 import types
 from tagtypes import tagtype
 
-def ECTag(name, data):
-	return unicode.encode(unichr(2*name), "utf-8") + ECTagData(data)
+def ECTag(tag_tuple):
+    name, data = tag_tuple
+    return unicode.encode(unichr(2*name), "utf-8") + ECTagData(data)
 
 def ECTagData(data):
     if type(data) == types.UnicodeType:

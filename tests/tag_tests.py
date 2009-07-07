@@ -51,7 +51,7 @@ def test_ECTagData_fail():
 
 def test_ECTag():
     test_data = 123
-    assert ECTag(0x101,test_data) == '\xc8\x82' + ECTagData(test_data)
+    assert ECTag((0x101,test_data)) == '\xc8\x82' + ECTagData(test_data)
 
 def test_ReadInt_uint8():
     test_int = 73
@@ -128,17 +128,17 @@ def test_ReadTagData_fail():
 def test_ReadTag_mode_1char():
     test_name = codes.tag['passwd_hash'] # 0x02
     test_data = '1234567890abcdef'
-    assert ReadTag(ECTag(test_name,test_data)) == (19, test_name, test_data)
+    assert ReadTag(ECTag((test_name,test_data))) == (19, test_name, test_data)
 
 def test_ReadTag_mode_2char():
     test_name = codes.tag['client_version'] # 0x101
     test_data = u'123'
-    assert ReadTag(ECTag(test_name,test_data)) == (8, test_name, test_data)
+    assert ReadTag(ECTag((test_name,test_data))) == (8, test_name, test_data)
 
 def test_ReadTag_mode_3char():
     test_name = 0xFFF
     test_data = 123
-    assert ReadTag(ECTag(test_name,test_data)) == (6, test_name, test_data)
+    assert ReadTag(ECTag((test_name,test_data))) == (6, test_name, test_data)
 
 def test_ReadTag_fail_1():
     try:

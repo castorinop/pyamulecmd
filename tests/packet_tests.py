@@ -2,7 +2,7 @@ from ec.packet import *
 import types
 
 def test_ECPacketData():
-    assert ECPacketData(0x02,['tag1','tag2']) == '\x02\x02tag1tag2'
+    assert ECPacketData(0x02,[(0x02, 3000),(0x01, 5)]) == '\x02\x02\x04\x03\x02\x0b\xb8\x02\x02\x01\x05'
 
 def test_ECPacket():
     test_data = 'packet data'

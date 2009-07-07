@@ -11,7 +11,7 @@ def ECPacket(data):
 def ECPacketData(type, tags):
     return pack('BB',
         type,
-        len(tags)) + ''.join(tags)
+        len(tags)) + ''.join(map(ECTag,tags))
 
 class NotEnoughDataError(Exception):
     def __str__(self):
@@ -38,8 +38,8 @@ def ReadPacketData(data):
 def ECLoginPacket(app, version, password):
     return ECPacket(
         ECPacketData(codes.op['auth_req'],
-            [ECTag(codes.tag['client_name'],      unicode(app)),
-             ECTag(codes.tag['client_version'],   unicode(version)),
-             ECTag(codes.tag['protocol_version'], codes.protocol_version),
-             ECTag(codes.tag['passwd_hash'],      md5(password).digest())
+            [(codes.tag['client_name'],      unicode(app)),
+             (codes.tag['client_version'],   unicode(version)),
+             (codes.tag['protocol_version'], codes.protocol_version),
+             (codes.tag['passwd_hash'],      md5(password).digest())
             ]))
