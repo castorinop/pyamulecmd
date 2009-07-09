@@ -13,7 +13,7 @@ def ECPacketData(data_tuple):
     type, tags = data_tuple
     return pack('BB',
         type,
-        len(tags)) + ''.join(map(ECTag,tags))
+        len(tags)) + ''.join([ECTag(name, data) for name,data in tags])
 
 class NotEnoughDataError(Exception):
     def __str__(self):
