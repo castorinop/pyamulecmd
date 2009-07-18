@@ -9,14 +9,9 @@ class ConnectionFailedError(Exception):
 
 class conn:
     def __init__(self, password, host="localhost", port=4712, app="pyEC", ver="0.5"):
-        self.password = password
-        self.app = app
-        self.ver = ver
-        self.host = "localhost"
-        self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-        self.sock.connect((self.host,self.port)) 
-        packet_req = ECLoginPacket(self.app, self.ver, password)
+        self.sock.connect((host,port)) 
+        packet_req = ECLoginPacket(app, ver, password)
 
         type, tags = self.send_and_receive_packet(packet_req)
         if type != codes.op['auth_ok']:
