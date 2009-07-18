@@ -11,25 +11,13 @@ def ECPacket(data_tuple):
 
 def ECPacketData(data_tuple):
     type, tags = data_tuple
-    return pack('BB',
+    return pack('!BH',
         type,
         len(tags)) + ''.join([ECTag(name, data) for name,data in tags])
 
-class NotEnoughDataError(Exception):
-    def __str__(self):
-        return 'Not enough data provided'
-
-def ReadPacket(data):
-    if len(data) < 8:
-        raise NotEnoughDataError
-    flags, data_len = unpack("!II", data[:8])
-    if len(data) < (8 + data_len):
-        raise NotEnoughDataError
-    return ReadPacketData(data[8:8+data_len])
-
 def ReadPacketData(data):
-    type, num_tags = unpack('BB', data[:2]) 
-    offset = 2
+    type, num_tags = unpack('!BH', data[:3]) 
+    offset = 3
     tags = []
     for i in range(num_tags):
         tag_len, tag_name, tag_data = ReadTag(data[offset:])

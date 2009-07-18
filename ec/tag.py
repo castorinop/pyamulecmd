@@ -66,6 +66,7 @@ def ReadTagData(data):
     elif type == tagtype['string']:
         len, value = ReadString(data[1:])
     else:
+        print type
         raise TypeError
     return len + 1, value
 

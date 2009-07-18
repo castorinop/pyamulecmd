@@ -1,3 +1,3 @@
-from packet import ECLoginPacket, ReadPacket
+from conn import conn
 
-__all__ = ["ECLoginPacket", "ReadPacket"]
+__all__ = ["conn"]
