@@ -1,4 +1,4 @@
-from packet import ECLoginPacket, ReadPacketData
+from packet import ECLoginPacket, ECPacket, ReadPacketData
 from struct import unpack
 import socket, asynchat
 import codes
@@ -21,6 +21,7 @@ class conn:
 
     def send_packet(self, data):
         self.sock.send(data)
+
     def receive_packet(self):
         header_data = self.sock.recv(8)
         if (not header_data) or (len(header_data) != 8):
@@ -28,10 +29,20 @@ class conn:
         flags, data_len = unpack("!II", "".join(header_data))
         packet_data = self.sock.recv(data_len)
         if (not packet_data) or (len(packet_data) != data_len):
-            print len(packet_data), data_len
             raise ConnectionFailedError
         return ReadPacketData("".join(packet_data))
+
     def send_and_receive_packet(self, data):
         self.send_packet(data)
         return self.receive_packet()
+
+    def get_status(self):
+        data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)
+    
+    def get_connstate(self):
+        data = ECPacket((codes.op['get_connstate'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)
 

@@ -53,41 +53,46 @@ def ReadTag(data):
         name_len = 3
     else:
         raise ValueError
-    tag_name = ord(data[:name_len].decode("utf-8"))/2
+    tag_value = ord(data[:name_len].decode("utf-8"))
+    tag_name = tag_value/2
+    tag_has_subtags = (tag_value%2 == 1)
+    if tag_has_subtags:
+        pass
     data_len, data = ReadTagData(data[name_len:])
     return name_len + data_len , tag_name, data
 
+#\x07\x01
+#\x0b\x02 \x09\x01
+#\x14\x02\x01\x00\x08
+
 def ReadTagData(data):
     type = ord(data[0])
+    length = ord(data[1])
+    tag_data = data[2:2+length]
     if type in [tagtype['uint8'], tagtype['uint16'], tagtype['uint32'], tagtype['uint64']]:
-        len, value = ReadInt(data[1:])
+        value = ReadInt(tag_data)
     elif type == tagtype['hash16']:
-        len, value = ReadHash(data[1:])
+        value = ReadHash(tag_data)
     elif type == tagtype['string']:
-        len, value = ReadString(data[1:])
+        value = ReadString(tag_data)
     else:
-        print type
         raise TypeError
-    return len + 1, value
+    return length+2, value
 
 def ReadInt(data):
-    len = unpack('!B', data[0])[0]
-    if len == 1:
-        fmtStr = '!B'
-    elif len == 2:
-        fmtStr = '!H'
-    elif len == 4:
-        fmtStr = '!I'
-    else:
-        fmtStr = '!Q'
-    return len +1 , unpack(fmtStr, data[1:1+len])[0]
+    fmtStr = { 1: "!B",
+               2: "!H",
+               4: "!I",
+               8: "!Q"}.get(len(data), "")
+    if fmtStr == "":
+        print "Warning: Wrong length for integer"
+        return 0
+    return unpack(fmtStr, data)[0]
 
 def ReadString(data):
-    len = ord(data[0])
-    return len+1, unicode(data[1:len])
+    return unicode(data[:-1])
 
 def ReadHash(data):
-    len = ord(data[0])
-    if len != 16:
+    if len(data) != 16:
         raise ValueError
-    return len+1, data[1:len+1]
+    return data
