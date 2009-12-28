@@ -44,5 +44,40 @@ class conn:
     def get_connstate(self):
         data = ECPacket((codes.op['get_connstate'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
         response = self.send_and_receive_packet(data)
-        print repr(response)
-
+        # structure: (op['misc_data'], [(tag['connstate'], (connstate, [subtags]))])
+        # (7, [(5, (29, [(1280, ('212.63.206.35:4242', [(1281, u'eDonkeyServer No2')])), (6, 8955376), (10, 8955376)]))])
+        connstate = response[1][0][1][0]
+        subtags = response[1][0][1][1]
+        server_name, server_addr, ed2k_id, client_id = "", "", "", ""
+        for tag in subtags:
+            if tag[0] == codes.tag['server']:
+                server_addr = tag[1][0]
+                server_name = tag[1][1][0][1]
+            if tag[0] == codes.tag['ed2k_id']:
+                ed2k_id = tag[1]
+            if tag[0] == codes.tag['client_id']:
+                client_id = tag[1]
+        
+        status = "eD2k: "
+        if (connstate & 0x01): # ed2k connected
+            highest_lowid_ed2k_kad = 16777216
+            id = "with HighID" if (client_id > highest_lowid_ed2k_kad) else "with LowID"
+            status += "Connected to %s [%s] %s" % (server_name, server_addr, id)
+        elif (connstate & 0x02): # ed2k connecting
+            status += "Now connecting"
+        else:
+            status += "Not connected"
+        status += "\nKad: "
+        if (connstate & 0x10): # kad running
+            if (connstate & 0x04): # kad connected
+                status += "Connected ("
+                if (connstate & 0x08): # kad firewalled
+                    status += "firewalled"
+                else:
+                    status += "ok"
+                status += ")"
+            else:
+                status += "Not connected"
+        else:
+            status += "Not running"
+        print status
