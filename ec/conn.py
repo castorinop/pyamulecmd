@@ -36,10 +36,10 @@ class conn:
         self.send_packet(data)
         return self.receive_packet()
 
-    def get_status(self):
-        data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
-        response = self.send_and_receive_packet(data)
-        print repr(response)
+    #def get_status(self):
+    #    data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
+    #    response = self.send_and_receive_packet(data)
+    #    print repr(response)
     
     def get_connstate(self):
         data = ECPacket((codes.op['get_connstate'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
@@ -48,36 +48,39 @@ class conn:
         # (7, [(5, (29, [(1280, ('212.63.206.35:4242', [(1281, u'eDonkeyServer No2')])), (6, 8955376), (10, 8955376)]))])
         connstate = response[1][0][1][0]
         subtags = response[1][0][1][1]
-        server_name, server_addr, ed2k_id, client_id = "", "", "", ""
+        status = { "server_name" : "", \
+                   "server_addr" : "", \
+                   "ed2k_id"     : "", \
+                   "client_id"   : 0, \
+                   "id"          : 0, \
+                   "kad_firewall": ""  \
+                 }
         for tag in subtags:
             if tag[0] == codes.tag['server']:
-                server_addr = tag[1][0]
-                server_name = tag[1][1][0][1]
+                status["server_addr"] = tag[1][0]
+                status["server_name"] = tag[1][1][0][1]
             if tag[0] == codes.tag['ed2k_id']:
-                ed2k_id = tag[1]
+                status["ed2k_id"] = tag[1]
             if tag[0] == codes.tag['client_id']:
-                client_id = tag[1]
+                status["client_id"] = tag[1]
         
-        status = "eD2k: "
         if (connstate & 0x01): # ed2k connected
+            status["ed2k"] = "connected"
             highest_lowid_ed2k_kad = 16777216
-            id = "with HighID" if (client_id > highest_lowid_ed2k_kad) else "with LowID"
-            status += "Connected to %s [%s] %s" % (server_name, server_addr, id)
+            status["id"] = "HighID" if (status["client_id"] > highest_lowid_ed2k_kad) else "LowID"
         elif (connstate & 0x02): # ed2k connecting
-            status += "Now connecting"
+            status["ed2k"] = "connecting"
         else:
-            status += "Not connected"
-        status += "\nKad: "
+            status["ed2k"] = "not connected"
         if (connstate & 0x10): # kad running
             if (connstate & 0x04): # kad connected
-                status += "Connected ("
+                status["kad"] = "connected"
                 if (connstate & 0x08): # kad firewalled
-                    status += "firewalled"
+                    status["kad_firewall"] = "firewalled"
                 else:
-                    status += "ok"
-                status += ")"
+                    status["kad_firewall"] = "ok"
             else:
-                status += "Not connected"
+                status["kad"] = "Not connected"
         else:
-            status += "Not running"
-        print status
+            status["kad"] = "Not running"
+        return status
