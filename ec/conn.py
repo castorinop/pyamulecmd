@@ -28,7 +28,7 @@ class conn:
             raise ConnectionFailedError
         flags, data_len = unpack("!II", "".join(header_data))
         packet_data = self.sock.recv(data_len)
-        #print repr(header_data), repr(packet_data)
+        print repr(header_data), repr(packet_data)
         if (not packet_data) or (len(packet_data) != data_len):
             raise ConnectionFailedError
         return ReadPacketData("".join(packet_data))
@@ -37,10 +37,10 @@ class conn:
         self.send_packet(data)
         return self.receive_packet()
 
-#    def get_status(self):
-#        data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
-#        response = self.send_and_receive_packet(data)
-#        print repr(response)
+    def get_status(self):
+        data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)
     
     def get_connstate(self):
         data = ECPacket((codes.op['get_connstate'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
@@ -49,6 +49,9 @@ class conn:
         # (7, [(5, (29, [(1280, ('212.63.206.35:4242', [(1281, u'eDonkeyServer No2')])), (6, 8955376), (10, 8955376)]))])
         connstate = response[1][0][1][0]
         subtags = response[1][0][1][1]
+        return self.__decode_connstate__(connstate, subtags)
+
+    def __decode_connstate__(self, connstate, subtags):
         status = { "server_name" : "", \
                    "server_addr" : "", \
                    "ed2k_id"     : 0, \
