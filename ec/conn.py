@@ -28,6 +28,7 @@ class conn:
             raise ConnectionFailedError
         flags, data_len = unpack("!II", "".join(header_data))
         packet_data = self.sock.recv(data_len)
+        #print repr(header_data), repr(packet_data)
         if (not packet_data) or (len(packet_data) != data_len):
             raise ConnectionFailedError
         return ReadPacketData("".join(packet_data))
@@ -36,10 +37,10 @@ class conn:
         self.send_packet(data)
         return self.receive_packet()
 
-    #def get_status(self):
-    #    data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
-    #    response = self.send_and_receive_packet(data)
-    #    print repr(response)
+#    def get_status(self):
+#        data = ECPacket((codes.op['stat_req'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
+#        response = self.send_and_receive_packet(data)
+#        print repr(response)
     
     def get_connstate(self):
         data = ECPacket((codes.op['get_connstate'], [(codes.tag['detail_level'], codes.detail['cmd'])]))
@@ -50,9 +51,9 @@ class conn:
         subtags = response[1][0][1][1]
         status = { "server_name" : "", \
                    "server_addr" : "", \
-                   "ed2k_id"     : "", \
+                   "ed2k_id"     : 0, \
                    "client_id"   : 0, \
-                   "id"          : 0, \
+                   "id"          : "", \
                    "kad_firewall": ""  \
                  }
         for tag in subtags:
@@ -71,7 +72,7 @@ class conn:
         elif (connstate & 0x02): # ed2k connecting
             status["ed2k"] = "connecting"
         else:
-            status["ed2k"] = "not connected"
+            status["ed2k"] = "Not connected"
         if (connstate & 0x10): # kad running
             if (connstate & 0x04): # kad connected
                 status["kad"] = "connected"
