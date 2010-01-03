@@ -106,3 +106,27 @@ def test_connstate_kad_ok():
            status['id'] == "" and \
            status['server_addr'] == ''
 
+def test_connstate_kad_ok():
+    fake_host = send_response(["\x00\x00\x00\x22\x00\x00\x00\x0E\x04\x00\x01\xe0\xa8\x96\x06\x06\x32\x2e\x32\x2e\x33\x00",'\x00\x00\x00"\x00\x00\x00H\x0c\x0b\xd0\x80\x02\x01o\xd0\x82\x02\x01\x00\xd0\x84\x02\x01\x00\xd0\x86\x02\x01\x00\xd0\x90\x02\x01\x00\xd0\x8c\x02\x01\x00\xd0\x92\x04\x04\x001\xe8\x18\xd0\x94\x03\x02\x018\xd0\x96\x04\x04\x10\xa8\x91\xaa\xd0\x98\x03\x02\x92@\x0b\x02\x0c\x01\x14\x04\x04\xe8L\xb5T\x14'])
+    fake_host.start()
+    test_conn = conn("aaa")
+    status = test_conn.get_status()
+    assert status['ul_limit'] == 0 and \
+           status['queue_len'] == 0 and \
+           status['connstate']['kad_firewall'] == 'ok' and \
+           status['connstate']['ed2k'] == 'Not connected' and \
+           status['connstate']['server_name'] == '' and \
+           status['connstate']['kad'] == 'connected' and \
+           status['connstate']['ed2k_id'] ==  0 and \
+           status['connstate']['client_id'] == 3897341268L and \
+           status['connstate']['id'] == '' and \
+           status['connstate']['server_addr'] == '' and \
+           status['kad_users'] == 312 and \
+           status['ed2k_files'] == 279482794 and \
+           status['ed2k_users'] == 3270680 and \
+           status['dl_limit'] == 0 and \
+           status['dl_speed'] == 0 and \
+           status['kad_files'] == 37440 and \
+           status['src_count'] == 0 and \
+           status['ul_speed'] == 111
+
