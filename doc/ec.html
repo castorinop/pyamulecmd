@@ -1,0 +1,105 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: package ec</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>ec</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/johkra/projects/pyamulecmd/ec/__init__.py">/home/johkra/projects/pyamulecmd/ec/__init__.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="ec.codes.html">codes</a><br>
+<a href="ec.conn.html">conn</a><br>
+</td><td width="25%" valign=top><a href="ec.packet.html">packet</a><br>
+<a href="ec.tag.html">tag</a><br>
+</td><td width="25%" valign=top><a href="ec.tagtypes.html">tagtypes</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="ec.conn.html#conn">ec.conn.conn</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="conn">class <strong>conn</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Remote-control&nbsp;aMule(d)&nbsp;using&nbsp;"External&nbsp;connections<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="conn-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="conn-__init__"><strong>__init__</strong></a>(self, password, host<font color="#909090">='localhost'</font>, port<font color="#909090">=4712</font>, app<font color="#909090">='pyEC'</font>, ver<font color="#909090">='0.5'</font>)</dt><dd><tt>Connect&nbsp;to&nbsp;a&nbsp;running&nbsp;aMule(d)&nbsp;core<br>
+&nbsp;<br>
+Parameters:<br>
+-&nbsp;password&nbsp;(required):&nbsp;Password&nbsp;for&nbsp;the&nbsp;connection<br>
+-&nbsp;host&nbsp;(default:&nbsp;"localhost"):&nbsp;Host&nbsp;where&nbsp;core&nbsp;is&nbsp;running<br>
+-&nbsp;port&nbsp;(default:&nbsp;4712):&nbsp;Port&nbsp;where&nbsp;core&nbsp;is&nbsp;running<br>
+-&nbsp;app&nbsp;(default&nbsp;"pyEC"):&nbsp;application&nbsp;name&nbsp;transmitted&nbsp;on&nbsp;login<br>
+-&nbsp;ver&nbsp;(default:&nbsp;"0.5"):&nbsp;application&nbsp;version</tt></dd></dl>
+
+<dl><dt><a name="conn-get_connstate"><strong>get_connstate</strong></a>(self)</dt><dd><tt>Get&nbsp;connection&nbsp;status&nbsp;information&nbsp;from&nbsp;remore&nbsp;core<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
+-&nbsp;"ed2k":&nbsp;ed2k&nbsp;network&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"connected",&nbsp;"connecting",&nbsp;"Not&nbsp;connected"<br>
+-&nbsp;"kad":&nbsp;kademlia&nbsp;network&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"connected",&nbsp;"Not&nbsp;connected",&nbsp;"Not&nbsp;running"<br>
+-&nbsp;"server_addr":&nbsp;server&nbsp;address&nbsp;in&nbsp;ip:port&nbsp;format<br>
+-&nbsp;"ed2k_id":&nbsp;identification&nbsp;number&nbsp;for&nbsp;the&nbsp;ed2k&nbsp;network<br>
+-&nbsp;"client_id":&nbsp;identification&nbsp;number&nbsp;for&nbsp;the&nbsp;kademlia&nbsp;network<br>
+-&nbsp;"id":&nbsp;connection&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"LowID",&nbsp;"HighID",&nbsp;""<br>
+-&nbsp;"kad_firewall":&nbsp;kademlia&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"ok",&nbsp;"firewalled",&nbsp;""</tt></dd></dl>
+
+<dl><dt><a name="conn-get_status"><strong>get_status</strong></a>(self)</dt><dd><tt>Get&nbsp;status&nbsp;information&nbsp;from&nbsp;remote&nbsp;core<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
+-&nbsp;"ul_speed":&nbsp;upload&nbsp;speed&nbsp;in&nbsp;Bytes/s<br>
+-&nbsp;"dl_speed":&nbsp;download&nbsp;speed&nbsp;in&nbsp;Bytes/s<br>
+-&nbsp;"ul_limit":&nbsp;upload&nbsp;limit,&nbsp;0&nbsp;is&nbsp;unlimited<br>
+-&nbsp;"dl_limit":&nbsp;download&nbsp;limit,&nbsp;0&nbsp;is&nbsp;unlimited<br>
+-&nbsp;"queue_len":&nbsp;number&nbsp;of&nbsp;clients&nbsp;waiting&nbsp;in&nbsp;the&nbsp;upload&nbsp;queue<br>
+-&nbsp;"src_count":&nbsp;number&nbsp;of&nbsp;download&nbsp;sources<br>
+-&nbsp;"ed2k_users":&nbsp;users&nbsp;in&nbsp;the&nbsp;eD2k&nbsp;network<br>
+-&nbsp;"kad_users":&nbsp;users&nbsp;in&nbsp;the&nbsp;kademlia&nbsp;network<br>
+-&nbsp;"ed2k_files":&nbsp;files&nbsp;in&nbsp;the&nbsp;eD2k&nbsp;network<br>
+-&nbsp;"kad_files":&nbsp;files&nbsp;in&nbsp;the&nbsp;kademlia&nbsp;network<br>
+-&nbsp;"connstate":&nbsp;connection&nbsp;status,&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"ed2k":&nbsp;ed2k&nbsp;network&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"connected",&nbsp;"connecting",&nbsp;"Not&nbsp;connected"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"kad":&nbsp;kademlia&nbsp;network&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"connected",&nbsp;"Not&nbsp;connected",&nbsp;"Not&nbsp;running"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"server_addr":&nbsp;server&nbsp;address&nbsp;in&nbsp;ip:port&nbsp;format<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"ed2k_id":&nbsp;identification&nbsp;number&nbsp;for&nbsp;the&nbsp;ed2k&nbsp;network<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"client_id":&nbsp;identification&nbsp;number&nbsp;for&nbsp;the&nbsp;kademlia&nbsp;network<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"id":&nbsp;connection&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"LowID",&nbsp;"HighID",&nbsp;""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;"kad_firewall":&nbsp;kademlia&nbsp;status.&nbsp;possible&nbsp;values:&nbsp;"ok",&nbsp;"firewalled",&nbsp;""</tt></dd></dl>
+
+<dl><dt><a name="conn-receive_packet"><strong>receive_packet</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="conn-send_and_receive_packet"><strong>send_and_receive_packet</strong></a>(self, data)</dt></dl>
+
+<dl><dt><a name="conn-send_packet"><strong>send_packet</strong></a>(self, data)</dt></dl>
+
+<dl><dt><a name="conn-shutdown"><strong>shutdown</strong></a>(self)</dt><dd><tt>Shutdown&nbsp;remote&nbsp;core</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__all__</strong> = ['conn']</td></tr></table>
+</body></html>
