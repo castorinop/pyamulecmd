@@ -8,9 +8,9 @@ class ConnectionFailedError(Exception):
         pass
 
 class conn:
-    """Remote-control aMule(d) using "External connections"""
+    """Remote-control aMule(d) using "External connections."""
     def __init__(self, password, host="localhost", port=4712, app="pyEC", ver="0.5"):
-        """Connect to a running aMule(d) core
+        """Connect to a running aMule(d) core.
         
         Parameters:
         - password (required): Password for the connection
@@ -47,7 +47,7 @@ class conn:
         return self.receive_packet()
 
     def get_status(self):
-        """Get status information from remote core
+        """Get status information from remote core.
         
         Returns a dictionary with the following keys:
         - "ul_speed": upload speed in Bytes/s
@@ -77,7 +77,7 @@ class conn:
         
     
     def get_connstate(self):
-        """Get connection status information from remore core
+        """Get connection status information from remore core.
         
         Returns a dictionary with the following keys:
         - "ed2k": ed2k network status. possible values: "connected", "connecting", "Not connected"
@@ -100,4 +100,48 @@ class conn:
         data = ECPacket((codes.op['shutdown'],[]))
         self.send_packet(data)
 
-    
+    def connect(self):
+        """Connect remote core to activated networks.
+        
+        Returns a tuple with a boolean indicating success and a list of strings with status messages."""
+        data = ECPacket((codes.op['connect'],[]))
+        response = self.send_and_receive_packet(data)
+        # (op['failed'], [(tag['string'], u'All networks are disabled.')])
+        # (op['strings'], [(tag['string'], u'Connecting to eD2k...'), (tag['string'], u'Connecting to Kad...')])
+        return (response[0] != codes.op['failed'], map(lambda s:s[1],response[1]))
+
+    def connect_server(self):
+        """Connect remote core to eD2k network.
+        
+        Returns a boolean indicating success."""
+        data = ECPacket((codes.op['server_connect'],[]))
+        response = self.send_and_receive_packet(data)
+        return response[0] != codes.op['failed']
+
+    def connect_kad(self):
+        """Connect remote core to kademlia network.
+        
+        Returns a boolean indicating success."""
+        data = ECPacket((codes.op['kad_start'],[]))
+        response = self.send_and_receive_packet(data)
+        return response[0] != codes.op['failed']
+
+    def disconnect(self):
+        """Disconnect remote core from networks.
+        
+        Returns a tuple with a boolean indicating success and a list of strings with status messages."""
+        # (op['noop'], [])
+        # (op['strings'], [(tag['string'], u'Disconnected from eD2k.'), (tag['string'], u'Disconnected from Kad.')])
+        data = ECPacket((codes.op['disconnect'],[]))
+        response = self.send_and_receive_packet(data)
+        return (response[0] == codes.op['strings'], map(lambda s:s[1],response[1]))
+
+    def disconnect_server(self):
+        """Disconnect remote core from eD2k network."""
+        data = ECPacket((codes.op['server_disconnect'],[]))
+        response = self.send_and_receive_packet(data)
+
+    def disconnect_kad(self):
+        """Disconnect remote core from kademlia network."""
+        data = ECPacket((codes.op['kad_stop'],[]))
+        response = self.send_and_receive_packet(data)
