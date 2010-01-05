@@ -1,7 +1,7 @@
 from struct import pack, unpack
 from hashlib import md5
-from tag import ECTag, ReadTag
-import codes
+from .tag import ECTag, ReadTag
+from . import codes
 
 def ECPacket(data_tuple):
     data = ECPacketData(data_tuple)

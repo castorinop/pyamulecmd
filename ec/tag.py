@@ -1,6 +1,6 @@
 from struct import pack, unpack
 import types
-from tagtypes import tagtype
+from .tagtypes import tagtype
 
 def ECTag(name, data):
     return unicode.encode(unichr(2*name), "utf-8") + ECTagData(data)
@@ -115,7 +115,7 @@ def ReadInt(data):
                4: "!I",
                8: "!Q"}.get(len(data), "")
     if fmtStr == "":
-        print "Warning: Wrong length for integer"
+        print("Warning: Wrong length for integer")
         return 0
     return unpack(fmtStr, data)[0]
 

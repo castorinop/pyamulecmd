@@ -1,7 +1,7 @@
-from packet import ECLoginPacket, ECPacket, ReadPacketData
+from .packet import ECLoginPacket, ECPacket, ReadPacketData
 from struct import unpack
 import socket, asynchat
-import codes, packet
+from . import codes, packet
 
 class ConnectionFailedError(Exception):
     def __init__(self):
