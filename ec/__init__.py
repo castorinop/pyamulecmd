@@ -1,3 +1,3 @@
-from .conn import conn
+from .conn import conn, ConnectionFailedError
 
-__all__ = ["conn"]
+__all__ = ["conn", "ConnectionFailedError"]

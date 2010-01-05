@@ -20,7 +20,10 @@ class conn:
         - ver (default: "0.5"): application version
         """
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-        self.sock.connect((host,port)) 
+        try:
+            self.sock.connect((host,port))
+        except (socket.error):
+            raise ConnectionFailedError
         packet_req = ECLoginPacket(app, ver, password)
 
         type, tags = self.send_and_receive_packet(packet_req)
