@@ -44,38 +44,55 @@ def ECTagDataInt(data):
         len = 8
     return pack(fmtStr, tagType, len, data)
 
-def ReadTag(data):
-    if ord(data[0]) in range(0x7F):
-        name_len = 1
-    elif ord(data[0]) in range(0xc3,0xdf):
-        name_len = 2
-    elif ord(data[0]) in range(0xe0,0xef):
-        name_len = 3
+def ReadTag(data, utf8_nums = True):
+    if utf8_nums:
+        if ord(data[0]) in range(0x7F):
+            name_len = 1
+        elif ord(data[0]) in range(0xc3,0xdf):
+            name_len = 2
+        elif ord(data[0]) in range(0xe0,0xef):
+            name_len = 3
+        else:
+            raise ValueError("%s not a valid unicode range" % ord(data[0]))
+        tag_value = ord(data[:name_len].decode("utf-8"))
     else:
-        raise ValueError
-    tag_value = ord(data[:name_len].decode("utf-8"))
+        name_len = 2
+        tag_value, = unpack("!H",data[:2])
     tag_name = tag_value/2
     tag_has_subtags = (tag_value%2 == 1)
-    data_len, data = ReadTagData(data[name_len:], tag_has_subtags)
+    data_len, data = ReadTagData(data[name_len:], tag_has_subtags, utf8_nums)
     return name_len + data_len , tag_name, data
 
-#\x07\x01
-#\x0b\x02 \x09\x01
-#\x14\x02\x01\x00\x08
-
-def ReadTagData(data, tag_has_subtags=False):
+def ReadTagData(data, tag_has_subtags=False, utf8_nums = True):
     type = ord(data[0])
-    length = ord(data[1])
-    #length should be ignored
-    tag_data = data[2:]
+    if utf8_nums:
+        length = ord(data[1])
+        if ord(data[1]) in range(0x7F):
+            utf_len = 1
+        elif ord(data[1]) in range(0xc3,0xdf):
+            utf_len = 2
+        elif ord(data[1]) in range(0xe0,0xef):
+            utf_len = 3
+        else:
+            raise ValueError("%s not a valid unicode range" % hex(ord(data[1])))
+        length = ord(data[1:1+utf_len].decode("utf-8"))
+        tag_data = data[1+utf_len:]
+    else:
+        length, = unpack('!I', data[1:5])
+        utf_len = 4
+        tag_data = data[5:]
     if tag_has_subtags:
-        num_subtags = ord(tag_data[0])
+        if utf8_nums:
+            num_subtags = ord(tag_data[0])
+            offset=1
+        else:
+            num_subtags, = unpack('!H', tag_data[:2])
+            offset=2
         subtags = []
         subtag_data = tag_data
-        offset=1
-        length = 3
+        length = 1+utf_len+offset
         for i in range(num_subtags):
-            subtag_len, subtag_name, subtag_data = ReadTag(tag_data[offset:])
+            subtag_len, subtag_name, subtag_data = ReadTag(tag_data[offset:],utf8_nums)
             offset += subtag_len
             length += subtag_len
             subtags.append((subtag_name, subtag_data))
@@ -94,7 +111,7 @@ def ReadTagData(data, tag_has_subtags=False):
     elif type == tagtype['hash16']:
         if tag_has_subtags:
             length += 16
-        value = ReadHash(tag_data)
+        value = ReadHash(tag_data[:16])
     elif type == tagtype['string']:
         value = ReadString(tag_data)
         if tag_has_subtags:
@@ -103,11 +120,13 @@ def ReadTagData(data, tag_has_subtags=False):
         if tag_has_subtags:
             length += 6
         value = ReadIPv4(tag_data)
+    elif type == tagtype['custom']:
+        value = tag_data[:length]
     else:
-        raise TypeError
+        raise TypeError("Invalid tag type 0x%x"%type)
     if tag_has_subtags:
         return length, (value, subtags)
-    return length+2, value
+    return length+utf_len+1, value
 
 def ReadInt(data):
     fmtStr = { 1: "!B",
@@ -115,8 +134,7 @@ def ReadInt(data):
                4: "!I",
                8: "!Q"}.get(len(data), "")
     if fmtStr == "":
-        print("Warning: Wrong length for integer")
-        return 0
+        raise ValueError("ReadInt: Wrong length for number: %d [%s]" %(len(data),repr(data)))
     return unpack(fmtStr, data)[0]
 
 def ReadIPv4(data):
@@ -132,5 +150,5 @@ def ReadString(data):
 
 def ReadHash(data):
     if len(data) != 16:
-        raise ValueError
+        raise ValueError("Expected length 16, got length %d"%(len(data)))
     return data

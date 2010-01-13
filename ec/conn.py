@@ -1,6 +1,6 @@
 from .packet import ECLoginPacket, ECPacket, ReadPacketData
 from struct import unpack
-import socket, asynchat
+import asynchat, socket, zlib
 from . import codes, packet
 
 class ConnectionFailedError(Exception):
@@ -43,7 +43,10 @@ class conn:
         packet_data = self.sock.recv(data_len)
         if (not packet_data) or (len(packet_data) != data_len):
             raise ConnectionFailedError
-        return ReadPacketData("".join(packet_data))
+        if (flags & codes.flag['zlib']):
+            packet_data = zlib.decompress(packet_data)
+        utf8_nums = (flags & codes.flag['utf8_numbers'] != 0)
+        return ReadPacketData("".join(packet_data), utf8_nums)
 
     def send_and_receive_packet(self, data):
         self.send_packet(data)
@@ -148,3 +151,19 @@ class conn:
         """Disconnect remote core from kademlia network."""
         data = ECPacket((codes.op['kad_stop'],[]))
         response = self.send_and_receive_packet(data)
+
+    def reload_sharedfiles(self):
+        """Reload shared files on remote core."""
+        data = ECPacket((codes.op['sharedfiles_reload'],[]))
+        response = self.send_and_receive_packet(data)
+
+    def reload_ipfilter(self):
+        """Reload ipfilter on remote core."""
+        data = ECPacket((codes.op['ipfilter_reload'],[]))
+        response = self.send_and_receive_packet(data)
+
+    def get_shared(self):
+        """Get list of shared files."""
+        data = ECPacket((codes.op['get_shared_files'],[]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)

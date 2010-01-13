@@ -15,12 +15,17 @@ def ECPacketData(data_tuple):
         type,
         len(tags)) + ''.join([ECTag(name, data) for name,data in tags])
 
-def ReadPacketData(data):
-    type, num_tags = unpack('!BB', data[:2])
-    offset = 2
+def ReadPacketData(data, utf8_nums = True):
+    type, = unpack('!B', data[:1])
+    if utf8_nums:
+        offset = 2
+        num_tags, = unpack('!B', data[1:2])
+    else:
+        num_tags, = unpack('!H', data[1:3])
+        offset = 3
     tags = []
     for i in range(num_tags):
-        tag_len, tag_name, tag_data = ReadTag(data[offset:])
+        tag_len, tag_name, tag_data = ReadTag(data[offset:], utf8_nums)
         offset += tag_len
         tags.append((tag_name, tag_data))
     return type, tags

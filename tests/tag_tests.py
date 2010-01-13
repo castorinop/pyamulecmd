@@ -81,7 +81,10 @@ def test_ReadInt_uint64():
 
 def test_ReadInt_invalid():
     test_data = "\xFF\xFF\xFF"
-    assert ReadInt(test_data) == 0
+    try:
+        ReadInt(test_data)
+    except ValueError:
+        pass
 
 
 def test_ReadString():
