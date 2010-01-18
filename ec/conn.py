@@ -39,14 +39,14 @@ class conn:
         header_data = self.sock.recv(8)
         if (not header_data) or (len(header_data) != 8):
             raise ConnectionFailedError
-        flags, data_len = unpack("!II", "".join(header_data))
+        flags, data_len = unpack("!II", header_data)
         packet_data = self.sock.recv(data_len)
         if (not packet_data) or (len(packet_data) != data_len):
             raise ConnectionFailedError
         if (flags & codes.flag['zlib']):
             packet_data = zlib.decompress(packet_data)
         utf8_nums = (flags & codes.flag['utf8_numbers'] != 0)
-        return ReadPacketData("".join(packet_data), utf8_nums)
+        return ReadPacketData(packet_data, utf8_nums)
 
     def send_and_receive_packet(self, data):
         self.send_packet(data)
