@@ -121,3 +121,36 @@ def decode_status(tags):
         if (tag_type == codes.tag['connstate']):
             status['connstate'] = decode_connstate(*value)
     return status
+
+def decode_shared(tags):
+    files = []
+    for shared_file in tags:
+        file = {}
+        file['hash'] = shared_file[1][0]
+        for (key, value) in shared_file[1][1]:
+            if (key == codes.tag['knownfile_xferred']):
+                file['uploaded'] = value
+            if (key == codes.tag['knownfile_xferred_all']):
+                file['uploaded_total'] = value
+            if (key == codes.tag['knownfile_req_count']):
+                file['requests'] = value
+            if (key == codes.tag['knownfile_req_count_all']):
+                file['requests_total'] = value
+            if (key == codes.tag['knownfile_accept_count']):
+                file['accepted_requests'] = value
+            if (key == codes.tag['knownfile_accept_count_all']):
+                file['accepted_requests_total'] = value
+            if (key == codes.tag['knownfile_aich_masterhash']):
+                file['aich'] = value
+            if (key == codes.tag['partfile_prio']):
+                file['prio'] = value
+            if (key == codes.tag['partfile_part_status']):
+                file['part_status'] = value
+            if (key == codes.tag['partfile_name']):
+                file['name'] = value
+            if (key == codes.tag['partfile_size_full']):
+                file['size'] = value
+            if (key == codes.tag['partfile_ed2k_link']):
+                file['link'] = value
+        files.append(file)
+    return files

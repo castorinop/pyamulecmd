@@ -152,7 +152,7 @@ class conn:
         data = ECPacket((codes.op['kad_stop'],[]))
         response = self.send_and_receive_packet(data)
 
-    def reload_sharedfiles(self):
+    def reload_shared(self):
         """Reload shared files on remote core."""
         data = ECPacket((codes.op['sharedfiles_reload'],[]))
         response = self.send_and_receive_packet(data)
@@ -163,7 +163,29 @@ class conn:
         response = self.send_and_receive_packet(data)
 
     def get_shared(self):
-        """Get list of shared files."""
+        """Get list of shared files.
+        
+        Returns a list of shared files. The data for a file is stored in a dictionary with the following keys:
+        - "name": file name
+        - "size": size in Bytes
+        - "link": eD2k link to the file
+        - "hash": file hash stored in 16 Byte
+        - "prio": upload priority, Auto is prefixed by 1, e.g. 12 is Auto (High)
+            - 4: Very Low
+            - 0: Low
+            - 1: Normal
+            - 2: High
+            - 3: Very High
+            - 6: Release
+        - "aich": file's AICH hash (see: http://wiki.amule.org/index.php/AICH)
+        - "part_status": unknown
+        - "uploaded": Bytes uploaded during the current session
+        - "uploaded_total": total Bytes uploaded
+        - "requests": number of requests for this file during the current session
+        - "requests_total": total number of requests for this file
+        - "accepted": number of accepted requests for this file during the current session
+        - "accepted_total": total number of accepted requests for this file
+        """
         data = ECPacket((codes.op['get_shared_files'],[]))
         response = self.send_and_receive_packet(data)
-        print repr(response)
+        return packet.decode_shared(response[1])
