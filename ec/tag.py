@@ -44,17 +44,21 @@ def ECTagDataInt(data):
         len = 8
     return pack(fmtStr, tagType, len, data)
 
+def ReadUTF8Num(data):
+    if ord(data[0]) in range(0x7F):
+        utf_len = 1
+    elif ord(data[0]) in range(0xc3,0xdf):
+        utf_len = 2
+    elif ord(data[0]) in range(0xe0,0xef):
+        utf_len = 3
+    else:
+        raise ValueError("%s not a valid unicode range" % hex(ord(data[0])))
+    value = ord(data[:utf_len].decode("utf-8"))
+    return utf_len, value
+
 def ReadTag(data, utf8_nums = True):
     if utf8_nums:
-        if ord(data[0]) in range(0x7F):
-            name_len = 1
-        elif ord(data[0]) in range(0xc3,0xdf):
-            name_len = 2
-        elif ord(data[0]) in range(0xe0,0xef):
-            name_len = 3
-        else:
-            raise ValueError("%s not a valid unicode range" % ord(data[0]))
-        tag_value = ord(data[:name_len].decode("utf-8"))
+        name_len, tag_value = ReadUTF8Num(data)
     else:
         name_len = 2
         tag_value, = unpack("!H",data[:2])
@@ -66,16 +70,7 @@ def ReadTag(data, utf8_nums = True):
 def ReadTagData(data, tag_has_subtags=False, utf8_nums = True):
     type = ord(data[0])
     if utf8_nums:
-        length = ord(data[1])
-        if ord(data[1]) in range(0x7F):
-            utf_len = 1
-        elif ord(data[1]) in range(0xc3,0xdf):
-            utf_len = 2
-        elif ord(data[1]) in range(0xe0,0xef):
-            utf_len = 3
-        else:
-            raise ValueError("%s not a valid unicode range" % hex(ord(data[1])))
-        length = ord(data[1:1+utf_len].decode("utf-8"))
+        utf_len, length = ReadUTF8Num(data[1:])
         tag_data = data[1+utf_len:]
     else:
         length, = unpack('!I', data[1:5])
