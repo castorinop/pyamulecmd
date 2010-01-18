@@ -4,8 +4,10 @@ import asynchat, socket, zlib
 from . import codes, packet
 
 class ConnectionFailedError(Exception):
-    def __init__(self):
-        pass
+    def __init__(self, error):
+        self.error = error
+    def __str__(self):
+        return repr(self.error)
 
 class conn:
     """Remote-control aMule(d) using "External connections."""
@@ -23,12 +25,12 @@ class conn:
         try:
             self.sock.connect((host,port))
         except (socket.error):
-            raise ConnectionFailedError
+            raise ConnectionFailedError("Couldn't connect to socket")
         packet_req = ECLoginPacket(app, ver, password)
 
         type, tags = self.send_and_receive_packet(packet_req)
         if type != codes.op['auth_ok']:
-            raise ConnectionFailedError
+            raise ConnectionFailedError("Authentication failed")
     def __del__(self):
         self.sock.close()
 
@@ -38,11 +40,11 @@ class conn:
     def receive_packet(self):
         header_data = self.sock.recv(8)
         if (not header_data) or (len(header_data) != 8):
-            raise ConnectionFailedError
+            raise ConnectionFailedError("Invalid packet header: received %d of 8 expected bytes" % len(header_data))
         flags, data_len = unpack("!II", header_data)
         packet_data = self.sock.recv(data_len)
         if (not packet_data) or (len(packet_data) != data_len):
-            raise ConnectionFailedError
+            raise ConnectionFailedError("Invalid packet body: received %d of %d expected bytes" % (len(packet_data), data_len))
         if (flags & codes.flag['zlib']):
             packet_data = zlib.decompress(packet_data)
         utf8_nums = (flags & codes.flag['utf8_numbers'] != 0)
