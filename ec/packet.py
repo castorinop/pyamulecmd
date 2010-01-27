@@ -1,3 +1,4 @@
+import zlib
 from struct import pack, unpack
 from hashlib import md5
 from .tag import ECTag, ReadTag
@@ -5,8 +6,12 @@ from . import codes
 
 def ECPacket(data_tuple):
     data = ECPacketData(data_tuple)
+    flags = codes.flag['base'] | codes.flag['utf8_numbers']
+    if (len(data) > 1024):
+        flags |= codes.flag['zlib']
+        data = zlib.compress(data)
     return pack('!II',
-        codes.flag['base'] | codes.flag['utf8_numbers'],
+        flags,
         len(data)) + data
 
 def ECPacketData(data_tuple):
