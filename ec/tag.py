@@ -3,17 +3,28 @@ import types
 from .tagtypes import tagtype
 
 def ECTag(name, data):
-    return unicode.encode(unichr(2*name), "utf-8") + ECTagData(data)
+    has_subtags = 0 if type(data) != types.TupleType else 1
+    return unicode.encode(unichr(2*name+has_subtags), "utf-8") + ECTagData(data)
 
 def ECTagData(data):
+    print type(data)
+    retval = ''
+    if type(data) == types.TupleType:
+        subtags = data[1]
+        len = len(subtags)
+        retval += chr(len)
+        for tag in subtags:
+            retval += ECTag(tag[0],tag[1])
+        data = data[0]
     if type(data) == types.UnicodeType:
-        return ECTagDataStr(data)
+        retval += ECTagDataStr(data)
     elif type(data) in [types.IntType, types.LongType] :
-        return ECTagDataInt(data)
+        retval += ECTagDataInt(data)
     elif type(data) == types.StringType:
-        return ECTagDataHash(data)
+        retval += ECTagDataHash(data)
     else:
         raise TypeError('Argument of invalid type specified')
+    return retval
 
 def ECTagDataStr(data):
     data += '\0'
