@@ -7,21 +7,44 @@ def ECTag(name, data):
     return unicode.encode(unichr(2*name+has_subtags), "utf-8") + ECTagData(data)
 
 def ECTagData(data):
-    print type(data)
     retval = ''
+    subtag_data = ''
     if type(data) == types.TupleType:
         subtags = data[1]
-        len = len(subtags)
-        retval += chr(len)
+        num_subtags = len(subtags)
+        subtag_data += chr(num_subtags)
         for tag in subtags:
-            retval += ECTag(tag[0],tag[1])
+            subtag_data += ECTag(tag[0],tag[1])
         data = data[0]
     if type(data) == types.UnicodeType:
-        retval += ECTagDataStr(data)
+        data += '\0'
+        retval += pack('!BB',tagtype['string'], len(data)+len(subtag_data))
+        retval += subtag_data
+        retval += unicode.encode(data, "utf-8")
     elif type(data) in [types.IntType, types.LongType] :
-        retval += ECTagDataInt(data)
+        if data <= pow(2,8):
+            fmtStr = '!B'
+            tagType = tagtype['uint8']
+            length = 1
+        elif data <= pow(2,16):
+            fmtStr = '!H'
+            tagType = tagtype['uint16']
+            length = 2
+        elif data <= pow(2,32):
+            fmtStr = '!I'
+            tagType = tagtype['uint32']
+            length = 4
+        else:
+            fmtStr = '!Q'
+            tagType = tagtype['uint64']
+            length = 8
+        retval += pack('!BB',tagType,length+len(subtag_data))
+        retval += subtag_data
+        retval += pack(fmtStr,data)
     elif type(data) == types.StringType:
-        retval += ECTagDataHash(data)
+        retval += pack('!BB',tagtype['hash16'],16+len(subtag_data))
+        retval += subtag_data
+        retval += data
     else:
         raise TypeError('Argument of invalid type specified')
     return retval
