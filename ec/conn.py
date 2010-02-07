@@ -191,3 +191,33 @@ class conn:
         data = ECPacket((codes.op['get_shared_files'],[]))
         response = self.send_and_receive_packet(data)
         return packet.decode_shared(response[1])
+
+    def search_local(self, keywords):
+        self.search(codes.search['local'],keywords)
+
+    def search_global(self, keywords):
+        self.search(codes.search['global'],keywords)
+
+    def search_kad(self, keywords):
+        self.search(codes.search['kad'],keywords)
+
+
+    def search(self, type, keywords):
+        packet = (codes.op['search_start'], \
+            [(codes.tag['search_type'],(type, \
+                [(codes.tag['search_name'],unicode(keywords))] \
+            ))] \
+        )
+        data = ECPacket(packet)
+        response = self.send_and_receive_packet(data)
+        print repr(response)
+
+    def search_progress(self):
+        data = ECPacket((codes.op['search_progress'],[]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)
+    
+    def search_results(self):
+        data = ECPacket((codes.op['search_results'],[]))
+        response = self.send_and_receive_packet(data)
+        print repr(response)
