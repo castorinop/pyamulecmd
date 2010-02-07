@@ -175,7 +175,7 @@ def ReadIPv4(data):
     return "%d.%d.%d.%d:%d"% (a,b,c,d,port)
 
 def ReadString(data):
-    return unicode(data[:data.find('\x00')])
+    return unicode(data[:data.find('\x00')],"utf8")
 
 def ReadHash(data):
     if len(data) != 16:
