@@ -25,7 +25,8 @@ Parameters:<br>
 
 <dl><dt><a name="conn-connect"><strong>connect</strong></a>(self)</dt><dd><tt>Connect&nbsp;remote&nbsp;core&nbsp;to&nbsp;activated&nbsp;networks.<br>
 &nbsp;<br>
-Returns&nbsp;a&nbsp;tuple&nbsp;with&nbsp;a&nbsp;boolean&nbsp;indicating&nbsp;success&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;strings&nbsp;with&nbsp;status&nbsp;messages.</tt></dd></dl>
+Returns&nbsp;a&nbsp;tuple&nbsp;with&nbsp;a&nbsp;boolean&nbsp;indicating&nbsp;success&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;with&nbsp;status&nbsp;messages.</tt></dd></dl>
 
 <dl><dt><a name="conn-connect_kad"><strong>connect_kad</strong></a>(self)</dt><dd><tt>Connect&nbsp;remote&nbsp;core&nbsp;to&nbsp;kademlia&nbsp;network.<br>
 &nbsp;<br>
@@ -37,7 +38,8 @@ Returns&nbsp;a&nbsp;boolean&nbsp;indicating&nbsp;success.</tt></dd></dl>
 
 <dl><dt><a name="conn-disconnect"><strong>disconnect</strong></a>(self)</dt><dd><tt>Disconnect&nbsp;remote&nbsp;core&nbsp;from&nbsp;networks.<br>
 &nbsp;<br>
-Returns&nbsp;a&nbsp;tuple&nbsp;with&nbsp;a&nbsp;boolean&nbsp;indicating&nbsp;success&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;strings&nbsp;with&nbsp;status&nbsp;messages.</tt></dd></dl>
+Returns&nbsp;a&nbsp;tuple&nbsp;with&nbsp;a&nbsp;boolean&nbsp;indicating&nbsp;success&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;strings<br>
+&nbsp;with&nbsp;status&nbsp;messages.</tt></dd></dl>
 
 <dl><dt><a name="conn-disconnect_kad"><strong>disconnect_kad</strong></a>(self)</dt><dd><tt>Disconnect&nbsp;remote&nbsp;core&nbsp;from&nbsp;kademlia&nbsp;network.</tt></dd></dl>
 
@@ -56,7 +58,8 @@ Returns&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
 
 <dl><dt><a name="conn-get_shared"><strong>get_shared</strong></a>(self)</dt><dd><tt>Get&nbsp;list&nbsp;of&nbsp;shared&nbsp;files.<br>
 &nbsp;<br>
-Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;shared&nbsp;files.&nbsp;The&nbsp;data&nbsp;for&nbsp;a&nbsp;file&nbsp;is&nbsp;stored&nbsp;in&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;shared&nbsp;files.&nbsp;The&nbsp;data&nbsp;for&nbsp;a&nbsp;file&nbsp;is&nbsp;stored&nbsp;in&nbsp;a<br>
+&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
 -&nbsp;"name":&nbsp;file&nbsp;name<br>
 -&nbsp;"size":&nbsp;size&nbsp;in&nbsp;Bytes<br>
 -&nbsp;"link":&nbsp;eD2k&nbsp;link&nbsp;to&nbsp;the&nbsp;file<br>
@@ -104,6 +107,44 @@ Returns&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
 <dl><dt><a name="conn-reload_ipfilter"><strong>reload_ipfilter</strong></a>(self)</dt><dd><tt>Reload&nbsp;ipfilter&nbsp;on&nbsp;remote&nbsp;core.</tt></dd></dl>
 
 <dl><dt><a name="conn-reload_shared"><strong>reload_shared</strong></a>(self)</dt><dd><tt>Reload&nbsp;shared&nbsp;files&nbsp;on&nbsp;remote&nbsp;core.</tt></dd></dl>
+
+<dl><dt><a name="conn-search"><strong>search</strong></a>(self, type, keywords)</dt><dd><tt>Start&nbsp;a&nbsp;search.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;tuple&nbsp;consisting&nbsp;of&nbsp;a&nbsp;boolean&nbsp;value&nbsp;indicating&nbsp;success&nbsp;and<br>
+a&nbsp;string&nbsp;with&nbsp;aMule's&nbsp;answer.<br>
+&nbsp;<br>
+Type&nbsp;is&nbsp;one&nbsp;of&nbsp;local&nbsp;(0x00),&nbsp;global&nbsp;(0x01)&nbsp;and&nbsp;kad&nbsp;(0x02),&nbsp;denoting&nbsp;the<br>
+&nbsp;scope&nbsp;of&nbsp;the&nbsp;search.<br>
+"local"&nbsp;queries&nbsp;only&nbsp;the&nbsp;connected&nbsp;server,&nbsp;"global"&nbsp;all&nbsp;servers&nbsp;in&nbsp;the<br>
+&nbsp;server&nbsp;list&nbsp;and&nbsp;"kad"&nbsp;starts&nbsp;a&nbsp;search&nbsp;in&nbsp;the&nbsp;kad&nbsp;network.<br>
+Usage&nbsp;of&nbsp;the&nbsp;helper&nbsp;functions&nbsp;"search_local",&nbsp;"search_global"&nbsp;and<br>
+&nbsp;"search_kad"&nbsp;is&nbsp;recommended.<br>
+&nbsp;<br>
+Keywords&nbsp;is&nbsp;a&nbsp;string&nbsp;of&nbsp;words&nbsp;for&nbsp;which&nbsp;to&nbsp;search.</tt></dd></dl>
+
+<dl><dt><a name="conn-search_global"><strong>search_global</strong></a>(self, keywords)</dt><dd><tt>Start&nbsp;a&nbsp;kad&nbsp;search.<br>
+&nbsp;<br>
+See&nbsp;function&nbsp;"search"&nbsp;for&nbsp;further&nbsp;details.</tt></dd></dl>
+
+<dl><dt><a name="conn-search_kad"><strong>search_kad</strong></a>(self, keywords)</dt><dd><tt>Start&nbsp;a&nbsp;kad&nbsp;search.<br>
+&nbsp;<br>
+See&nbsp;function&nbsp;"search"&nbsp;for&nbsp;further&nbsp;details.</tt></dd></dl>
+
+<dl><dt><a name="conn-search_local"><strong>search_local</strong></a>(self, keywords)</dt><dd><tt>Start&nbsp;a&nbsp;kad&nbsp;search.<br>
+&nbsp;<br>
+See&nbsp;function&nbsp;"search"&nbsp;for&nbsp;further&nbsp;details.</tt></dd></dl>
+
+<dl><dt><a name="conn-search_progress"><strong>search_progress</strong></a>(self)</dt><dd><tt>Doesn't&nbsp;work&nbsp;correctly,&nbsp;don't&nbsp;use&nbsp;it.</tt></dd></dl>
+
+<dl><dt><a name="conn-search_results"><strong>search_results</strong></a>(self)</dt><dd><tt>Get&nbsp;results&nbsp;of&nbsp;last&nbsp;search.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;search&nbsp;results.&nbsp;The&nbsp;data&nbsp;for&nbsp;a&nbsp;search&nbsp;result&nbsp;is<br>
+&nbsp;stored&nbsp;in&nbsp;a&nbsp;dictionary&nbsp;with&nbsp;the&nbsp;following&nbsp;keys:<br>
+-&nbsp;"name":&nbsp;file&nbsp;name<br>
+-&nbsp;"size":&nbsp;size&nbsp;in&nbsp;Bytes<br>
+-&nbsp;"hash":&nbsp;file&nbsp;hash&nbsp;stored&nbsp;in&nbsp;16&nbsp;Byte<br>
+-&nbsp;"sources":&nbsp;number&nbsp;of&nbsp;clients&nbsp;sharing&nbsp;the&nbsp;file<br>
+-&nbsp;"sources_complete":&nbsp;number&nbsp;of&nbsp;clients&nbsp;sharing&nbsp;all&nbsp;parts&nbsp;of&nbsp;the&nbsp;file</tt></dd></dl>
 
 <dl><dt><a name="conn-send_and_receive_packet"><strong>send_and_receive_packet</strong></a>(self, data)</dt></dl>
 
