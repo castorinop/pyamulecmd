@@ -159,3 +159,20 @@ def decode_shared(tags):
                 file['link'] = value
         files.append(file)
     return files
+
+def decode_search(tags):
+    files = []
+    for search_file in tags:
+        file = {}
+        file['hash'] = search_file[1][0]
+        for (key, value) in search_file[1][1]:
+            if (key == codes.tag['partfile_source_count']):
+                file['sources'] = value
+            if (key == codes.tag['partfile_source_count_xfer']):
+                file['sources_complete'] = value
+            if (key == codes.tag['partfile_name']):
+                file['name'] = value
+            if (key == codes.tag['partfile_size_full']):
+                file['size'] = value
+        files.append(file)
+    return files

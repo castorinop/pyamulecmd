@@ -111,7 +111,8 @@ class conn:
     def connect(self):
         """Connect remote core to activated networks.
         
-        Returns a tuple with a boolean indicating success and a list of strings with status messages."""
+        Returns a tuple with a boolean indicating success and a list of strings
+         with status messages."""
         data = ECPacket((codes.op['connect'],[]))
         response = self.send_and_receive_packet(data)
         # (op['failed'], [(tag['string'], u'All networks are disabled.')])
@@ -137,7 +138,8 @@ class conn:
     def disconnect(self):
         """Disconnect remote core from networks.
         
-        Returns a tuple with a boolean indicating success and a list of strings with status messages."""
+        Returns a tuple with a boolean indicating success and a list of strings
+         with status messages."""
         # (op['noop'], [])
         # (op['strings'], [(tag['string'], u'Disconnected from eD2k.'), (tag['string'], u'Disconnected from Kad.')])
         data = ECPacket((codes.op['disconnect'],[]))
@@ -167,7 +169,8 @@ class conn:
     def get_shared(self):
         """Get list of shared files.
         
-        Returns a list of shared files. The data for a file is stored in a dictionary with the following keys:
+        Returns a list of shared files. The data for a file is stored in a
+         dictionary with the following keys:
         - "name": file name
         - "size": size in Bytes
         - "link": eD2k link to the file
@@ -193,16 +196,39 @@ class conn:
         return packet.decode_shared(response[1])
 
     def search_local(self, keywords):
-        self.search(codes.search['local'],keywords)
+        """Start a kad search.
+        
+        See function "search" for further details."""
+        return self.search(codes.search['local'],keywords)
 
     def search_global(self, keywords):
-        self.search(codes.search['global'],keywords)
+        """Start a kad search.
+        
+        See function "search" for further details."""
+        return self.search(codes.search['global'],keywords)
 
     def search_kad(self, keywords):
-        self.search(codes.search['kad'],keywords)
+        """Start a kad search.
+        
+        See function "search" for further details."""
+        return self.search(codes.search['kad'],keywords)
 
 
     def search(self, type, keywords):
+        """Start a search.
+        
+        Returns a tuple consisting of a boolean value indicating success and
+        a string with aMule's answer.
+        
+        Type is one of local (0x00), global (0x01) and kad (0x02), denoting the
+         scope of the search.
+        "local" queries only the connected server, "global" all servers in the
+         server list and "kad" starts a search in the kad network.
+        Usage of the helper functions "search_local", "search_global" and
+         "search_kad" is recommended.
+        
+        Keywords is a string of words for which to search.
+        """
         packet = (codes.op['search_start'], \
             [(codes.tag['search_type'],(type, \
                 [(codes.tag['search_name'],unicode(keywords))] \
@@ -210,14 +236,28 @@ class conn:
         )
         data = ECPacket(packet)
         response = self.send_and_receive_packet(data)
-        print repr(response)
+        answer = response[1][0][1]
+        not_connected = (answer == u'Search in progress. Refetch results in a moment!')
+        return (not_connected, answer)
 
     def search_progress(self):
+        """Doesn't work correctly, don't use it.
+        """
         data = ECPacket((codes.op['search_progress'],[]))
         response = self.send_and_receive_packet(data)
         print repr(response)
     
     def search_results(self):
+        """Get results of last search.
+        
+        Returns a list of search results. The data for a search result is
+         stored in a dictionary with the following keys:
+        - "name": file name
+        - "size": size in Bytes
+        - "hash": file hash stored in 16 Byte
+        - "sources": number of clients sharing the file
+        - "sources_complete": number of clients sharing all parts of the file
+        """
         data = ECPacket((codes.op['search_results'],[]))
         response = self.send_and_receive_packet(data)
-        print repr(response)
+        return packet.decode_search(response[1])
