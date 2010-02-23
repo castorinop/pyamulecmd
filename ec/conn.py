@@ -261,3 +261,12 @@ class conn:
         data = ECPacket((codes.op['search_results'],[]))
         response = self.send_and_receive_packet(data)
         return packet.decode_search(response[1])
+    
+    def add_link(self, link):
+        """Add link to aMule core.
+        
+        Returns True when the link was added and False if the link is invalid.
+        """
+        data = ECPacket((codes.op['add_link'],[(codes.tag['string'],unicode(link))]))
+        response = self.send_and_receive_packet(data)
+        print (response[0] != codes.op['failed'])
