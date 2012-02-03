@@ -43,6 +43,12 @@ def ECLoginPacket(app, version, password):
              (codes.tag['passwd_hash'],      md5(password).digest())
             ]))
 
+def ECAuthPacket(password):
+    return ECPacket((codes.op['auth_passwd'],
+            [
+             (codes.tag['passwd_hash'],      md5(password).digest())
+            ]))
+
 def decode_connstate(connstate, subtags):
     status = { "server_name" : "", \
                "server_addr" : "", \

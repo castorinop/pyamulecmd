@@ -1,7 +1,8 @@
-from .packet import ECLoginPacket, ECPacket, ReadPacketData
+from .packet import ECLoginPacket, ECAuthPacket, ECPacket, ReadPacketData
 from struct import unpack
-import asynchat, socket, zlib
-from . import codes, packet
+import asynchat, socket, zlib, re
+from . import codes, packet, tag
+from hashlib import md5
 
 class ConnectionFailedError(Exception):
     def __init__(self, error):
@@ -29,6 +30,30 @@ class conn:
         packet_req = ECLoginPacket(app, ver, password)
 
         type, tags = self.send_and_receive_packet(packet_req)
+        
+        if type == codes.op['auth_salt']:
+            passwordSalt = None
+            for i in tags:
+                if i[0] == codes.tag['passwd_salt']:
+                    passwordSalt = "%lX" % i[1] 
+                    break
+            if not passwordSalt is None:
+                try:
+                    saltHash = md5(passwordSalt).hexdigest()
+                    
+                    #check if is hashed password
+                    if re.match(r"([a-fA-F\d]{32})", password):
+                        passHash = password
+                    else:
+                        passHash = md5(password).hexdigest()
+                        
+                    cPassword = (passHash.lower() + saltHash)
+
+                    packet_req =  ECAuthPacket(cPassword)
+                    type, tags = self.send_and_receive_packet(packet_req)
+                except:
+                    raise
+            
         if type != codes.op['auth_ok']:
             raise ConnectionFailedError("Authentication failed")
     def __del__(self):
