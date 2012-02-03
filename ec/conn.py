@@ -42,7 +42,7 @@ class conn:
         if (not header_data) or (len(header_data) != 8):
             raise ConnectionFailedError("Invalid packet header: received %d of 8 expected bytes" % len(header_data))
         flags, data_len = unpack("!II", header_data)
-        packet_data = self.sock.recv(data_len,socket.MSG_WAITALL)
+        packet_data = self.sock.recv(data_len)
         if (not packet_data) or (len(packet_data) != data_len):
             raise ConnectionFailedError("Invalid packet body: received %d of %d expected bytes" % (len(packet_data), data_len))
         if (flags & codes.flag['zlib']):
